@@ -20,7 +20,8 @@ import {
   deleteObject,
   listAll
 } from 'firebase/storage'
-import { db, storage } from './firebase'
+import { db } from './firebase'
+import { storage } from './firebase-storage'
 
 // Types pour les données
 export interface Document {

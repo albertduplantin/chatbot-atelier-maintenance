@@ -1,7 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { documentService, Document } from '@/lib/firebase-services'
 import { toast } from 'sonner'
+
+export interface Document {
+  id?: string
+  name: string
+  machine: string
+  type: 'pdf' | 'image' | 'schema'
+  url: string
+  size: number
+  uploadedAt: Date
+  uploadedBy: string
+  tags?: string[]
+  description?: string
+}
 
 export function useDocuments() {
   const { user } = useAuth()
@@ -9,7 +21,7 @@ export function useDocuments() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Charger tous les documents
+  // Charger tous les documents (simulation)
   const loadDocuments = useCallback(async () => {
     if (!user) return
 
@@ -17,8 +29,31 @@ export function useDocuments() {
     setError(null)
 
     try {
-      const docs = await documentService.getDocuments()
-      setDocuments(docs)
+      // Simulation de documents
+      const mockDocuments: Document[] = [
+        {
+          id: '1',
+          name: 'Schema Electrique Machine 1',
+          machine: 'Machine 1',
+          type: 'schema',
+          url: '#',
+          size: 1024000,
+          uploadedAt: new Date(),
+          uploadedBy: user.uid,
+        },
+        {
+          id: '2',
+          name: 'Notice Maintenance Machine 2',
+          machine: 'Machine 2',
+          type: 'pdf',
+          url: '#',
+          size: 2048000,
+          uploadedAt: new Date(),
+          uploadedBy: user.uid,
+        }
+      ]
+      
+      setDocuments(mockDocuments)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des documents'
       setError(errorMessage)
@@ -36,8 +71,20 @@ export function useDocuments() {
     setError(null)
 
     try {
-      const docs = await documentService.getDocumentsByMachine(machine)
-      setDocuments(docs)
+      const mockDocuments: Document[] = [
+        {
+          id: '1',
+          name: `Document ${machine}`,
+          machine: machine,
+          type: 'pdf',
+          url: '#',
+          size: 1024000,
+          uploadedAt: new Date(),
+          uploadedBy: user.uid,
+        }
+      ]
+      
+      setDocuments(mockDocuments)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des documents'
       setError(errorMessage)
@@ -55,22 +102,22 @@ export function useDocuments() {
     }
 
     try {
-      const docId = await documentService.addDocument({
+      const newDoc: Document = {
         ...document,
+        id: Date.now().toString(),
+        uploadedAt: new Date(),
         uploadedBy: user.uid,
-      })
+      }
       
-      // Recharger les documents
-      await loadDocuments()
-      
+      setDocuments(prev => [...prev, newDoc])
       toast.success('Document ajouté avec succès')
-      return docId
+      return newDoc.id
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de l\'ajout du document'
       toast.error(errorMessage)
       throw err
     }
-  }, [user, loadDocuments])
+  }, [user])
 
   // Supprimer un document
   const deleteDocument = useCallback(async (documentId: string) => {
@@ -80,11 +127,7 @@ export function useDocuments() {
     }
 
     try {
-      await documentService.deleteDocument(documentId)
-      
-      // Mettre à jour la liste locale
       setDocuments(prev => prev.filter(doc => doc.id !== documentId))
-      
       toast.success('Document supprimé avec succès')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la suppression du document'
@@ -96,7 +139,7 @@ export function useDocuments() {
   // Statistiques des documents
   const getStats = useCallback(() => {
     const totalDocuments = documents.length
-    const machines = [...new Set(documents.map(doc => doc.machine))]
+    const machines = Array.from(new Set(documents.map(doc => doc.machine)))
     const totalMachines = machines.length
     
     const documentsByType = documents.reduce((acc, doc) => {

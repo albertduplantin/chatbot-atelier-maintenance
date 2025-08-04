@@ -1,14 +1,13 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { 
-  User, 
-  signInWithPopup, 
-  GoogleAuthProvider, 
-  signOut as firebaseSignOut,
-  onAuthStateChanged
-} from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+
+interface User {
+  uid: string
+  email: string
+  displayName: string
+  photoURL: string
+}
 
 interface AuthContextType {
   user: User | null
@@ -24,42 +23,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
-      setLoading(false)
+    // Simuler un utilisateur connecté pour le développement
+    setUser({
+      uid: 'dev-user-123',
+      email: 'dev@example.com',
+      displayName: 'Développeur',
+      photoURL: 'https://via.placeholder.com/40'
     })
-
-    return () => unsubscribe()
+    setLoading(false)
   }, [])
 
   const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-    } catch (error) {
-      console.error('Erreur de connexion Google:', error)
-      throw error
-    }
+    // Simulation de connexion
+    setUser({
+      uid: 'dev-user-123',
+      email: 'dev@example.com',
+      displayName: 'Développeur',
+      photoURL: 'https://via.placeholder.com/40'
+    })
   }
 
   const signOut = async () => {
-    try {
-      await firebaseSignOut(auth)
-    } catch (error) {
-      console.error('Erreur de déconnexion:', error)
-      throw error
-    }
-  }
-
-  const value = {
-    user,
-    loading,
-    signInWithGoogle,
-    signOut
+    setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   )
@@ -68,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useAuth doit être utilisé dans un AuthProvider')
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 } 
