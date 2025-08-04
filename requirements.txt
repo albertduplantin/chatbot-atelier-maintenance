@@ -7,6 +7,7 @@ python-dotenv
 langchain
 langchain-openai
 chromadb
+pysqlite3-binary
 openai
 Pillow
 pytesseract
