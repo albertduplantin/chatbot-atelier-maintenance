@@ -45,8 +45,8 @@ class GoogleDriveHandler:
             st.error("❌ Credentials Google Drive non configurés. Voir le README.")
             return
         
-        # Pour les credentials OAuth2, vérifier s'ils sont valides
-        if hasattr(creds, 'valid') and not creds.valid:
+        # Pour les credentials OAuth2 uniquement, vérifier s'ils sont valides
+        if creds_dict.get('type') != 'service_account' and hasattr(creds, 'valid') and not creds.valid:
             if hasattr(creds, 'expired') and creds.expired and hasattr(creds, 'refresh_token') and creds.refresh_token:
                 creds.refresh(Request())
             else:
