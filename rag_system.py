@@ -5,6 +5,15 @@ import os
 import pickle
 from typing import List, Dict, Optional, Tuple
 import streamlit as st
+
+# Fix pour ChromaDB sur Streamlit Cloud - Force l'utilisation de pysqlite3-binary
+import sys
+try:
+    __import__('pysqlite3')
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+except ImportError:
+    pass
+
 import chromadb
 from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
