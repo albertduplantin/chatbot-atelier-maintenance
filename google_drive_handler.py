@@ -8,6 +8,7 @@ from typing import List, Dict, Optional
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from google.oauth2 import service_account
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.http import MediaIoBaseDownload
 import streamlit as st
@@ -29,14 +30,22 @@ class GoogleDriveHandler:
         # Vérifier si on a des credentials stockés dans Streamlit secrets
         if hasattr(st, 'secrets') and 'google_drive' in st.secrets:
             creds_dict = dict(st.secrets['google_drive'])
-            creds = Credentials.from_authorized_user_info(creds_dict, self.SCOPES)
+            
+            # Vérifier si c'est un service account ou OAuth2
+            if creds_dict.get('type') == 'service_account':
+                # Service Account credentials
+                creds = service_account.Credentials.from_service_account_info(
+                    creds_dict, scopes=self.SCOPES)
+            else:
+                # OAuth2 credentials (legacy)
+                creds = Credentials.from_authorized_user_info(creds_dict, self.SCOPES)
         
-        # Si pas de credentials valides, on utilise le flow OAuth
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
+        # Si pas de credentials valides pour OAuth2, on utilise le flow OAuth (dev local)
+        if not creds or (hasattr(creds, 'valid') and not creds.valid):
+            if creds and hasattr(creds, 'expired') and creds.expired and hasattr(creds, 'refresh_token') and creds.refresh_token:
                 creds.refresh(Request())
             else:
-                # Pour le développement local
+                # Pour le développement local avec OAuth2
                 if os.path.exists('credentials.json'):
                     flow = InstalledAppFlow.from_client_secrets_file(
                         'credentials.json', self.SCOPES)
