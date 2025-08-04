@@ -116,7 +116,7 @@ class AtelierChatbot:
         with st.sidebar.expander("💰 Estimation coûts", expanded=False):
             num_schemas = st.number_input("Nombre de schémas à analyser", 1, 50, 5)
             cost_est = self.vision_analyzer.get_cost_estimate(num_schemas)
-            st.write(f"💶 Coût estimé: {cost_est['total_cost_eur']:.3f}€")
+            st.write(cost_est)
     
     def load_documents_from_drive(self):
         """Charge les documents depuis Google Drive"""
