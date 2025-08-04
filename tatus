@@ -1,5 +1,0 @@
-[33me0bc6fc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m  Fix final: prevent OAuth2 validation for service accounts
-[33mf7fe0da[m  Fix Google Drive status messages - remove conflicting error/success messages
-[33m9328226[m  Fix cost estimation display in sidebar
-[33m0be3ddf[m  Fix Google Drive authentication to support Service Account credentials
-[33mb51771d[m  Add missing vision_analyzer.py - OpenAI GPT-4 Vision for electrical schema analysis

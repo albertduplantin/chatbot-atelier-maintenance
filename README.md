@@ -48,7 +48,7 @@ Application moderne de maintenance industrielle avec interface React, authentifi
 
 ```bash
 # Cloner le projet
-git clone [votre-repo]
+git clone https://github.com/albertduplantin/chatbot-atelier-maintenance.git
 
 # Installer les dépendances
 npm install
@@ -111,29 +111,13 @@ GOOGLE_DRIVE_FOLDER_ID=your_folder_id
 
 ### 🚀 Déploiement Rapide
 
-#### 1. Créer le Repository GitHub
-```bash
-# Créer un nouveau repository sur GitHub
-# Nom: chatbot-maintenance-modern
-# Description: Assistant IA pour maintenance industrielle - Next.js + Firebase
-```
-
-#### 2. Pousser le Code
-```bash
-git init
-git remote add origin https://github.com/VOTRE_USERNAME/chatbot-maintenance-modern.git
-git add .
-git commit -m "🚀 Initial commit: Architecture moderne Next.js + Firebase"
-git push -u origin main
-```
-
-#### 3. Configurer Vercel
+#### 1. Configurer Vercel
 1. Allez sur [https://vercel.com](https://vercel.com)
 2. Cliquez sur **"Continue with GitHub"**
 3. Sélectionnez votre repository
 4. Cliquez sur **"Deploy"**
 
-#### 4. Configurer les Variables d'Environnement
+#### 2. Configurer les Variables d'Environnement
 Dans Vercel Dashboard > Settings > Environment Variables :
 ```env
 # Firebase Configuration
@@ -161,15 +145,6 @@ Une fois configuré, chaque `git push` déclenche automatiquement un déploiemen
 - **Vercel Dashboard** : Analytics et performance
 - **Firebase Console** : Logs et monitoring
 - **GitHub** : Historique des déploiements
-
-### 🔧 Script de Déploiement
-```bash
-# Rendre le script exécutable
-chmod +x scripts/deploy.sh
-
-# Lancer le déploiement
-./scripts/deploy.sh
-```
 
 ### 📖 Guide Complet
 Consultez [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) pour un guide détaillé.
