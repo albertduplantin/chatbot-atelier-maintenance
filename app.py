@@ -120,65 +120,97 @@ class AtelierChatbot:
     
     def load_documents_from_drive(self):
         """Charge les documents depuis Google Drive"""
+        # Vérifier la connexion avant de commencer
         if not self.drive_handler:
             st.warning("⚠️ Veuillez d'abord connecter Google Drive")
             return
         
+        # Test de connexion
+        if not self.drive_handler.test_connection():
+            st.error("❌ Connexion Google Drive perdue. Veuillez reconnecter.")
+            return
+        
         with st.spinner("📥 Chargement des documents..."):
-            # Lister tous les fichiers
-            files = self.drive_handler.list_files_in_folder()
-            
-            if not files:
-                st.warning("Aucun fichier trouvé dans le dossier Drive")
-                return
-            
-            # Traiter chaque fichier
-            documents_to_add = []
-            progress_bar = st.progress(0)
-            
-            for i, file in enumerate(files):
-                progress_bar.progress((i + 1) / len(files))
+            try:
+                # Lister tous les fichiers
+                st.info("🔍 Recherche des fichiers PDF dans Google Drive...")
+                files = self.drive_handler.list_files_in_folder()
                 
-                # Télécharger le fichier
-                file_content = self.drive_handler.download_file(file['id'])
-                if not file_content:
-                    continue
+                if not files:
+                    st.warning("📭 Aucun fichier PDF trouvé dans le dossier Drive")
+                    st.info("💡 Assurez-vous d'avoir ajouté des fichiers PDF dans votre dossier Google Drive")
+                    return
                 
-                # Traiter selon le type
-                if file['mimeType'] == 'application/pdf':
-                    processed_doc = self.doc_processor.process_pdf(file_content, file['path'])
-                elif file['mimeType'].startswith('image/'):
-                    processed_doc = self.doc_processor.process_image_file(file_content, file['path'])
+                st.success(f"📄 {len(files)} fichiers PDF trouvés")
+                
+                # Traiter chaque fichier
+                documents_to_add = []
+                progress_bar = st.progress(0)
+                processed_count = 0
+                
+                for i, file in enumerate(files):
+                    progress_bar.progress((i + 1) / len(files))
+                    
+                    try:
+                        # Afficher le fichier en cours de traitement
+                        st.info(f"📥 Traitement: {file['name']}")
+                        
+                        # Télécharger le fichier
+                        file_content = self.drive_handler.download_file(file['id'])
+                        if not file_content:
+                            st.warning(f"⚠️ Impossible de télécharger: {file['name']}")
+                            continue
+                        
+                        # Traiter selon le type (seulement PDF pour l'instant)
+                        if file['mimeType'] == 'application/pdf':
+                            processed_doc = self.doc_processor.process_pdf(file_content, file['path'])
+                        else:
+                            st.info(f"⚠️ Type de fichier ignoré: {file['name']} ({file['mimeType']})")
+                            continue
+                        
+                        # Extraire les infos machine
+                        machine_info = self.doc_processor.extract_machine_info(file['path'])
+                        
+                        # Créer le contenu searchable
+                        searchable_content = self.doc_processor.create_searchable_content(processed_doc)
+                        
+                        if searchable_content.strip():
+                            documents_to_add.append({
+                                'id': file['id'],
+                                'content': searchable_content,
+                                'metadata': {
+                                    'file_path': file['path'],
+                                    'machine_name': machine_info['machine_name'],
+                                    'document_type': machine_info['document_type'],
+                                    'mime_type': file['mimeType'],
+                                    'modified_time': file.get('modifiedTime', ''),
+                                    'has_images': len(processed_doc.get('images', [])) > 0,
+                                    'images_count': len(processed_doc.get('images', []))
+                                }
+                            })
+                            processed_count += 1
+                            st.success(f"✅ Traité: {file['name']} -> {machine_info['machine_name']}")
+                        else:
+                            st.warning(f"⚠️ Contenu vide: {file['name']}")
+                    
+                    except Exception as e:
+                        st.error(f"❌ Erreur lors du traitement de {file['name']}: {e}")
+                        continue
+                
+                # Ajouter à la base RAG
+                if documents_to_add:
+                    st.info(f"💾 Ajout de {len(documents_to_add)} documents à la base de connaissances...")
+                    self.rag_system.add_documents_batch(documents_to_add)
+                    st.session_state.documents_loaded = True
+                    st.success(f"🎉 {processed_count} documents chargés avec succès !")
                 else:
-                    continue  # Ignorer les autres types
+                    st.warning("⚠️ Aucun document n'a pu être traité")
                 
-                # Extraire les infos machine
-                machine_info = self.doc_processor.extract_machine_info(file['path'])
+                progress_bar.empty()
                 
-                # Créer le contenu searchable
-                searchable_content = self.doc_processor.create_searchable_content(processed_doc)
-                
-                if searchable_content.strip():
-                    documents_to_add.append({
-                        'id': file['id'],
-                        'content': searchable_content,
-                        'metadata': {
-                            'file_path': file['path'],
-                            'machine_name': machine_info['machine_name'],
-                            'document_type': machine_info['document_type'],
-                            'mime_type': file['mimeType'],
-                            'modified_time': file.get('modifiedTime', ''),
-                            'has_images': len(processed_doc.get('images', [])) > 0,
-                            'images_count': len(processed_doc.get('images', []))
-                        }
-                    })
-            
-            # Ajouter à la base RAG
-            if documents_to_add:
-                self.rag_system.add_documents_batch(documents_to_add)
-                st.session_state.documents_loaded = True
-            
-            progress_bar.empty()
+            except Exception as e:
+                st.error(f"❌ Erreur lors du chargement des documents: {e}")
+                progress_bar.empty()
     
     def handle_user_message(self, user_message: str):
         """Traite un message utilisateur"""

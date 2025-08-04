@@ -64,14 +64,17 @@ class GoogleDriveHandler:
             st.error(f"❌ Erreur de connexion Google Drive: {e}")
             return
     
-    def list_files_in_folder(self, folder_id: Optional[str] = None) -> List[Dict]:
-        """Liste tous les fichiers dans un dossier"""
+    def list_files_in_folder(self, folder_id: Optional[str] = None, max_depth: int = 3) -> List[Dict]:
+        """Liste tous les fichiers dans un dossier avec limitation de profondeur"""
         if not self.service:
+            st.error("❌ Service Google Drive non initialisé")
             return []
         
         target_folder = folder_id or self.folder_id
         
         try:
+            st.info(f"🔍 Recherche de documents dans le dossier Drive...")
+            
             # Rechercher tous les fichiers dans le dossier
             query = f"'{target_folder}' in parents and trashed=false"
             results = self.service.files().list(
@@ -82,7 +85,12 @@ class GoogleDriveHandler:
             files = results.get('files', [])
             all_files = []
             
+            # Compter les fichiers trouvés
+            total_files = 0
+            pdf_files = 0
+            
             for file in files:
+                total_files += 1
                 file_info = {
                     'id': file['id'],
                     'name': file['name'],
@@ -91,13 +99,20 @@ class GoogleDriveHandler:
                     'path': self.get_file_path(file['id'])
                 }
                 
-                # Si c'est un dossier, lister récursivement
-                if file['mimeType'] == 'application/vnd.google-apps.folder':
-                    subfolder_files = self.list_files_in_folder(file['id'])
+                # Si c'est un dossier et qu'on n'a pas dépassé la profondeur max
+                if file['mimeType'] == 'application/vnd.google-apps.folder' and max_depth > 0:
+                    st.info(f"📁 Exploration du dossier: {file['name']}")
+                    subfolder_files = self.list_files_in_folder(file['id'], max_depth - 1)
                     all_files.extend(subfolder_files)
-                else:
+                elif file['mimeType'] == 'application/pdf':
+                    # Seulement les fichiers PDF
+                    pdf_files += 1
                     all_files.append(file_info)
+                    st.success(f"📄 PDF trouvé: {file['name']}")
+                else:
+                    st.info(f"⚠️ Fichier ignoré (non-PDF): {file['name']} ({file['mimeType']})")
             
+            st.success(f"✅ Recherche terminée: {pdf_files} fichiers PDF trouvés sur {total_files} fichiers totaux")
             return all_files
             
         except Exception as e:
@@ -114,18 +129,26 @@ class GoogleDriveHandler:
             
             path_parts = [file_metadata['name']]
             
-            # Remonter la hiérarchie des dossiers
+            # Remonter la hiérarchie des dossiers (limité à 5 niveaux pour éviter les boucles)
+            max_levels = 5
+            level = 0
+            
             if 'parents' in file_metadata:
                 parent_id = file_metadata['parents'][0]
-                while parent_id != self.folder_id:
-                    parent = self.service.files().get(
-                        fileId=parent_id, 
-                        fields='name, parents'
-                    ).execute()
-                    path_parts.insert(0, parent['name'])
-                    if 'parents' in parent:
-                        parent_id = parent['parents'][0]
-                    else:
+                while parent_id != self.folder_id and level < max_levels:
+                    try:
+                        parent = self.service.files().get(
+                            fileId=parent_id, 
+                            fields='name, parents'
+                        ).execute()
+                        path_parts.insert(0, parent['name'])
+                        if 'parents' in parent:
+                            parent_id = parent['parents'][0]
+                        else:
+                            break
+                        level += 1
+                    except Exception as e:
+                        st.warning(f"⚠️ Impossible de récupérer le chemin complet: {e}")
                         break
             
             return '/'.join(path_parts)
@@ -164,3 +187,16 @@ class GoogleDriveHandler:
                 machine_files.append(file)
         
         return machine_files
+    
+    def test_connection(self) -> bool:
+        """Teste la connexion Google Drive"""
+        if not self.service:
+            return False
+        
+        try:
+            # Test simple de connexion
+            self.service.files().list(pageSize=1).execute()
+            return True
+        except Exception as e:
+            st.error(f"❌ Test de connexion échoué: {e}")
+            return False

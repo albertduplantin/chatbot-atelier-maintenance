@@ -1,211 +1,249 @@
-# 🔧 Chatbot d'Atelier Maintenance
+# 🔧 Chatbot Atelier Maintenance - Architecture Moderne
 
-**Application web 100% en ligne** pour aider vos élèves dans le dépannage de machines industrielles, avec analyse automatique de schémas électriques.
+## 🚀 Nouvelle Architecture Next.js 14 + Firebase
 
-🌐 **Déploiement direct sur le web - Pas d'installation locale nécessaire !**
+Application moderne de maintenance industrielle avec interface React, authentification Firebase, et IA OpenAI.
 
-## 🎯 Fonctionnalités
+### ✨ Fonctionnalités
 
-- 💬 **Chat intelligent** : Questions/réponses sur vos machines
-- 📁 **Intégration Google Drive** : Accès direct à vos documentations
-- 🔍 **Recherche sémantique** : Trouve les infos pertinentes automatiquement
-- 📸 **Analyse de schémas** : IA Vision pour interpréter les schémas électriques
-- 🛠️ **Aide au dépannage** : Procédures step-by-step personnalisées
-- 🏭 **Multi-machines** : Gestion de toutes vos machines par dossiers
+- **🔐 Authentification** Firebase (Google)
+- **📁 Gestion documents** Google Drive + Firebase Storage
+- **🤖 Chat IA** OpenAI GPT-3.5
+- **👁️ Analyse schémas** OpenAI GPT-4 Vision
+- **🔍 Recherche avancée** Firestore
+- **📱 Interface moderne** React + Tailwind CSS
+- **🚀 Déploiement** Vercel
 
-## 🚀 Déploiement Web Direct
+### 🏗️ Architecture Technique
 
-### 1. Préparer votre repository GitHub
+```
+🌐 Frontend (Next.js 14 + Vercel)
+├── 📱 React 18 + TypeScript
+├── 🎨 Tailwind CSS + Shadcn/ui
+├── 🔄 Server Actions
+└── 🚀 Déploiement Vercel
+
+🔥 Backend (Firebase)
+├── 🔐 Authentication
+├── 📊 Firestore (NoSQL)
+├── 🗄️ Storage
+├── ⚡ Cloud Functions
+└── 🔍 Full-text Search
+
+🧠 IA & Recherche
+├── 🤖 OpenAI GPT-3.5-turbo
+├── 👁️ OpenAI GPT-4 Vision
+├── 🔍 Firestore Search
+└── 📊 Embeddings Hugging Face
+```
+
+### 💰 Coût Estimé
+
+- **Firebase** : 0€ (votre compte existant)
+- **OpenAI API** : ~7€/an
+- **Vercel** : 0€
+- **Total** : ~7€/an maximum
+
+### 📦 Installation
+
+```bash
+# Cloner le projet
+git clone [votre-repo]
+
+# Installer les dépendances
+npm install
+
+# Configuration
+cp env.example .env.local
+# Remplir les variables d'environnement
+
+# Lancer en développement
+npm run dev
+```
+
+### 🔧 Configuration Requise
+
+#### 1. Firebase (Votre compte existant)
+- Projet Firebase configuré
+- Authentication activé (Google)
+- Firestore activé
+- Storage activé
+
+#### 2. OpenAI
+- Compte OpenAI
+- Clé API GPT-3.5 et GPT-4 Vision
+
+#### 3. Google Drive
+- Dossier partagé avec Service Account
+- Documents PDF organisés par machine
+
+### 📋 Variables d'Environnement
+
+```env
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=your_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# OpenAI
+OPENAI_API_KEY=your_openai_key
+
+# Google Drive
+GOOGLE_DRIVE_FOLDER_ID=your_folder_id
+```
+
+## 🚀 Déploiement Automatique
+
+### 🎯 Stratégie de Déploiement
+- **Déploiement automatique** via Vercel
+- **Push sur GitHub** → Déploiement en production
+- **Pull Request** → Preview automatique
+- **Gratuit** → 100GB bande passante/mois
+
+### 📋 Prérequis
+1. **Compte GitHub** (pour le repository)
+2. **Compte Vercel** (gratuit)
+3. **Projet Firebase** configuré
+4. **Variables d'environnement** prêtes
+
+### 🚀 Déploiement Rapide
+
+#### 1. Créer le Repository GitHub
 ```bash
 # Créer un nouveau repository sur GitHub
-# Télécharger les fichiers du projet
-# Les uploader dans votre repository
+# Nom: chatbot-maintenance-modern
+# Description: Assistant IA pour maintenance industrielle - Next.js + Firebase
 ```
 
-### 3. Configuration Google Drive
+#### 2. Pousser le Code
+```bash
+git init
+git remote add origin https://github.com/VOTRE_USERNAME/chatbot-maintenance-modern.git
+git add .
+git commit -m "🚀 Initial commit: Architecture moderne Next.js + Firebase"
+git push -u origin main
+```
 
-#### A. Créer un projet Google Cloud
-1. Allez sur [Google Cloud Console](https://console.cloud.google.com)
-2. Créez un nouveau projet
-3. Activez l'API Google Drive
-4. Créez des credentials OAuth 2.0
-
-#### B. Télécharger le fichier credentials
-1. Dans Google Cloud Console → APIs & Services → Credentials
-2. Créez un "OAuth 2.0 Client ID" (Application desktop)
-3. Téléchargez le fichier JSON
-4. Renommez-le `credentials.json` et placez-le dans le dossier du projet
-
-#### C. Obtenir l'ID de votre dossier Drive
-1. Ouvrez votre dossier Google Drive avec les documentations
-2. Dans l'URL, copiez l'ID (partie après `/folders/`)
-   ```
-   https://drive.google.com/drive/folders/1ABC2DEF3GHI4JKL
-                                          ^^^^^^^^^^^^ (cet ID)
-   ```
-
-### 4. Configuration OpenAI (optionnel mais recommandé)
-1. Créez un compte sur [OpenAI](https://platform.openai.com)
-2. Générez une clé API
-3. Ajoutez du crédit (quelques euros suffisent pour des mois d'usage)
-
-### 5. Déployer sur Streamlit Cloud
-1. Allez sur [share.streamlit.io](https://share.streamlit.io)
-2. Connectez votre compte GitHub
+#### 3. Configurer Vercel
+1. Allez sur [https://vercel.com](https://vercel.com)
+2. Cliquez sur **"Continue with GitHub"**
 3. Sélectionnez votre repository
-4. Branch: `main`, File: `app.py`
-5. Deploy!
+4. Cliquez sur **"Deploy"**
 
-🌐 Votre application sera accessible via une URL publique
+#### 4. Configurer les Variables d'Environnement
+Dans Vercel Dashboard > Settings > Environment Variables :
+```env
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyC...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abc123
 
-## 📁 Organisation des documents dans Google Drive
+# OpenAI Configuration
+OPENAI_API_KEY=sk-...
 
-Organisez vos documents par machine :
-```
-📁 Dossier_Principal/
-├── 📁 Machine_A/
-│   ├── 📄 schema_puissance.pdf
-│   ├── 📄 schema_commande.pdf
-│   └── 📄 manuel_maintenance.pdf
-├── 📁 Machine_B/
-│   ├── 📸 photo_schema.jpg
-│   └── 📄 guide_depannage.pdf
-└── 📁 Machine_C/
-    └── 📄 documentation_complete.pdf
-```
+# Google Drive Configuration
+GOOGLE_DRIVE_FOLDER_ID=your_folder_id
 
-## 🌐 Configuration des secrets Streamlit Cloud
-
-### Configurer les secrets
-Une fois votre app déployée, allez dans Settings → Secrets de votre app
-Dans Streamlit Cloud, ajoutez vos secrets :
-
-```toml
-# .streamlit/secrets.toml
-[google_drive]
-type = "service_account"
-project_id = "votre-project-id"
-private_key_id = "votre-private-key-id"
-private_key = "-----BEGIN PRIVATE KEY-----\nVOTRE_CLE_PRIVEE\n-----END PRIVATE KEY-----\n"
-client_email = "votre-service-account@project.iam.gserviceaccount.com"
-client_id = "votre-client-id"
-auth_uri = "https://accounts.google.com/o/oauth2/auth"
-token_uri = "https://oauth2.googleapis.com/token"
-
-[openai]
-api_key = "sk-votre-cle-openai"
-
-GOOGLE_DRIVE_FOLDER_ID = "votre-folder-id-drive"
+# Application URL
+NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 ```
 
-### Credentials de service (Recommandé pour le web)
-1. Google Cloud Console → IAM & Admin → Service Accounts
-2. Créez un service account : "chatbot-atelier-service"
-3. Téléchargez la clé JSON
-4. Partagez votre dossier Drive avec l'email du service account (permissions: Viewer)
-5. Copiez le contenu JSON dans les secrets Streamlit Cloud
+### 🔄 Déploiement Automatique
+Une fois configuré, chaque `git push` déclenche automatiquement un déploiement !
 
-## 💡 Utilisation
+### 📊 Monitoring
+- **Vercel Dashboard** : Analytics et performance
+- **Firebase Console** : Logs et monitoring
+- **GitHub** : Historique des déploiements
 
-### Accès web
-1. **URL publique** : `https://votre-chatbot.streamlit.app`
-2. **Premier démarrage** : Les secrets sont pré-configurés
-3. **Charger documents** : Cliquez sur "Recharger documents"
-4. **Partager** : Donnez l'URL à vos élèves
+### 🔧 Script de Déploiement
+```bash
+# Rendre le script exécutable
+chmod +x scripts/deploy.sh
 
-### Exemples de questions
-- "Comment dépanner la machine X qui ne démarre plus ?"
-- "Où est le contacteur KM3 sur le schéma de la machine Y ?"
-- "La machine Z fait un bruit bizarre, que vérifier ?"
-- "Montre-moi la procédure de maintenance de la machine W"
-
-### Analyse de schémas
-1. Allez dans l'onglet "Analyse Schémas"
-2. Uploadez une photo/scan de schéma
-3. Cliquez sur "Analyse générale" ou décrivez un symptôme
-4. L'IA vous fournit une analyse détaillée
-
-## 💰 Coûts
-
-### Gratuit
-- Streamlit Cloud : hébergement gratuit
-- Google Drive API : gratuit
-- Embedding et recherche : gratuit
-
-### Payant (optionnel)
-- OpenAI GPT-4 Vision : ~1 centime par schéma analysé
-- Usage typique : 2-5€/mois pour un atelier
-
-## 🔧 Maintenance et mise à jour
-
-### Ajouter de nouveaux documents
-1. Ajoutez les fichiers dans Google Drive
-2. Cliquez sur "Recharger documents"
-3. Le système met à jour automatiquement
-
-### Réinitialiser la base
-1. Cliquez sur "Vider la base" dans la sidebar
-2. Rechargez vos documents
-
-### Sauvegarder
-La base de connaissances est stockée dans `./chroma_db/`
-Sauvegardez ce dossier pour conserver vos données
-
-## 🛠️ Dépannage
-
-### "Credentials Google Drive non configurés"
-- Vérifiez que `credentials.json` existe
-- Pour Streamlit Cloud : vérifiez les secrets
-
-### "Client OpenAI non initialisé"
-- Ajoutez votre clé API OpenAI
-- L'analyse de schémas reste possible sans OpenAI (limitée)
-
-### "Aucun fichier trouvé"
-- Vérifiez l'ID du dossier Drive
-- Vérifiez les permissions du dossier
-- Le dossier doit contenir des PDF ou images
-
-### Documents non trouvés
-- Vérifiez l'organisation par machine
-- Rechargez les documents
-- Les noms de dossiers deviennent les noms de machines
-
-## 📚 Architecture technique
-
-```
-📦 Application
-├── 🌐 app.py (Interface Streamlit)
-├── 📁 google_drive_handler.py (Accès Drive)
-├── 📄 document_processor.py (Traitement PDF/Images)
-├── 🔍 rag_system.py (Recherche intelligente)
-├── 👁️ vision_analyzer.py (Analyse schémas)
-└── 💾 chroma_db/ (Base de connaissances)
+# Lancer le déploiement
+./scripts/deploy.sh
 ```
 
-### Technologies utilisées
-- **Streamlit** : Interface web
-- **Google Drive API** : Accès documents
-- **ChromaDB** : Base vectorielle
-- **SentenceTransformers** : Embeddings français
-- **OpenAI GPT-4V** : Analyse d'images
-- **PyPDF2** : Extraction PDF
-- **Tesseract OCR** : Lecture de texte sur images
+### 📖 Guide Complet
+Consultez [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) pour un guide détaillé.
 
-## 🤝 Support
+### 📁 Structure des Documents
+
+```
+📁 Dossier Google Drive
+├── 📁 Machine1
+│   ├── 📄 schema_electrique.pdf
+│   └── 📄 notice_maintenance.pdf
+├── 📁 Machine2
+│   └── 📄 documentation.pdf
+└── 📄 document_general.pdf
+```
+
+### 🎯 Utilisation
+
+1. **Connexion** : Authentification Google
+2. **Upload** : Documents automatiquement synchronisés
+3. **Chat** : Questions en langage naturel
+4. **Analyse** : Upload de schémas électriques
+5. **Recherche** : Recherche avancée dans les documents
+
+### 🔍 Fonctionnalités Avancées
+
+- **Recherche sémantique** dans les documents
+- **Analyse de schémas** avec IA Vision
+- **Suggestions de dépannage** basées sur les documents
+- **Historique des conversations**
+- **Interface responsive** mobile/desktop
+
+### 🛠️ Développement
+
+```bash
+# Installation
+npm install
+
+# Développement
+npm run dev
+
+# Build
+npm run build
+
+# Linting
+npm run lint
+
+# Type checking
+npm run type-check
+```
+
+### 📊 Performance
+
+- **Temps de réponse** : < 1 minute
+- **Utilisateurs** : 5 utilisateurs
+- **Documents** : 300 éléments
+- **Fréquence** : 2 utilisations/semaine
+
+### 🔒 Sécurité
+
+- **Authentification** Firebase sécurisée
+- **Documents** stockés de manière sécurisée
+- **API keys** protégées côté serveur
+- **HTTPS** obligatoire en production
+
+### 🤝 Support
 
 Pour toute question ou problème :
-1. Vérifiez cette documentation
-2. Consultez les logs dans Streamlit
-3. Testez avec un petit nombre de documents d'abord
-
-## 📝 Notes importantes
-
-- **Sécurité** : Vos documents restent sur votre Drive
-- **Vie privée** : Seuls les extraits nécessaires sont analysés
-- **Performance** : Plus de documents = recherche plus précise
-- **Coût** : Surveillance recommandée de l'usage OpenAI
+1. Vérifier la documentation
+2. Consulter les logs Firebase
+3. Tester avec un petit nombre de documents
 
 ---
 
-🎓 **Parfait pour vos élèves en maintenance industrielle !**
+**🎓 Parfait pour vos élèves en maintenance industrielle !**
+
+*Migration depuis Streamlit vers une architecture moderne, robuste et évolutive.*
