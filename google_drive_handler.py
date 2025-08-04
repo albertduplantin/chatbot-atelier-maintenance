@@ -40,21 +40,29 @@ class GoogleDriveHandler:
                 # OAuth2 credentials (legacy)
                 creds = Credentials.from_authorized_user_info(creds_dict, self.SCOPES)
         
-        # Si pas de credentials valides pour OAuth2, on utilise le flow OAuth (dev local)
-        if not creds or (hasattr(creds, 'valid') and not creds.valid):
-            if creds and hasattr(creds, 'expired') and creds.expired and hasattr(creds, 'refresh_token') and creds.refresh_token:
+        # Si pas de credentials valides, on affiche un message d'erreur
+        if not creds:
+            st.error("❌ Credentials Google Drive non configurés. Voir le README.")
+            return
+        
+        # Pour les credentials OAuth2, vérifier s'ils sont valides
+        if hasattr(creds, 'valid') and not creds.valid:
+            if hasattr(creds, 'expired') and creds.expired and hasattr(creds, 'refresh_token') and creds.refresh_token:
                 creds.refresh(Request())
             else:
-                # Pour le développement local avec OAuth2
-                if os.path.exists('credentials.json'):
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        'credentials.json', self.SCOPES)
-                    creds = flow.run_local_server(port=0)
-                else:
-                    st.error("❌ Credentials Google Drive non configurés. Voir le README.")
-                    return
+                st.error("❌ Credentials Google Drive expirés ou invalides.")
+                return
         
         self.service = build('drive', 'v3', credentials=creds)
+        
+        # Afficher un message de succès si la connexion fonctionne
+        try:
+            # Test simple de connexion
+            self.service.files().list(pageSize=1).execute()
+            st.success("✅ Connecté à Google Drive")
+        except Exception as e:
+            st.error(f"❌ Erreur de connexion Google Drive: {e}")
+            return
     
     def list_files_in_folder(self, folder_id: Optional[str] = None) -> List[Dict]:
         """Liste tous les fichiers dans un dossier"""
