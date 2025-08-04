@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description: 'Assistant IA pour la maintenance industrielle avec analyse de schémas électriques',
   keywords: ['maintenance', 'industrielle', 'IA', 'schémas', 'électriques', 'chatbot'],
   authors: [{ name: 'Atelier Maintenance' }],
-  viewport: 'width=device-width, initial-scale=1',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
