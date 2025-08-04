@@ -9,10 +9,15 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
-import { LogOut, Settings, User } from 'lucide-react'
+import { LogOut, Settings, User, Menu } from 'lucide-react'
 import { toast } from 'sonner'
 
-export function Header() {
+interface HeaderProps {
+  onMenuToggle: () => void
+  isMenuOpen: boolean
+}
+
+export function Header({ onMenuToggle, isMenuOpen }: HeaderProps) {
   const { user, signOut } = useAuth()
 
   const handleSignOut = async () => {
@@ -27,13 +32,27 @@ export function Header() {
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center px-4">
+        {/* Menu Burger pour mobile */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden mr-2"
+          onClick={onMenuToggle}
+          aria-label="Toggle menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+
         <div className="flex items-center space-x-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">🔧</span>
           </div>
-          <div>
+          <div className="hidden sm:block">
             <h1 className="text-lg font-semibold">Chatbot Atelier Maintenance</h1>
             <p className="text-xs text-muted-foreground">Assistant IA pour la maintenance industrielle</p>
+          </div>
+          <div className="sm:hidden">
+            <h1 className="text-base font-semibold">Maintenance IA</h1>
           </div>
         </div>
 
@@ -76,7 +95,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground hidden sm:block">
               Non connecté
             </div>
           )}

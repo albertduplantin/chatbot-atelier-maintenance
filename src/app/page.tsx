@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
     // Simuler un temps de chargement pour l'initialisation
@@ -19,6 +20,14 @@ export default function Home() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
+  const handleMenuClose = () => {
+    setIsMenuOpen(false)
+  }
 
   if (isLoading) {
     return (
@@ -36,11 +45,11 @@ export default function Home() {
       <ChatProvider>
         <div className="flex h-screen bg-background">
           {/* Sidebar */}
-          <Sidebar />
+          <Sidebar isOpen={isMenuOpen} onClose={handleMenuClose} />
           
           {/* Main Content */}
           <div className="flex-1 flex flex-col">
-            <Header />
+            <Header onMenuToggle={handleMenuToggle} isMenuOpen={isMenuOpen} />
             <main className="flex-1 overflow-hidden">
               <ChatInterface />
             </main>
